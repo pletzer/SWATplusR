@@ -364,7 +364,7 @@
 <span class="co">#&gt;  Completed 1 simulation in 2S</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="exploring-the-swat-simulation-with-one-parameter-set">Exploring the SWAT+ simulation with one parameter set<a class="anchor" aria-label="anchor" href="#exploring-the-swat-simulation-with-one-parameter-set"></a>
+<h3 id="exploring-results-with-one-parameter-combination">Exploring results with one parameter combination<a class="anchor" aria-label="anchor" href="#exploring-results-with-one-parameter-combination"></a>
 </h3>
 <p>To recap, the simulation where no parameter changes were applied returned a single <code>tibble</code> with the simulation outputs for the defined output variables. The output <code>q_sim1</code> in this example is a bit more complex and consists of a <code>list</code> of <code>tibbles</code> as we have to store more information in the case of changed parameter values. The output consists of two main parts.</p>
 <p>The first element is <code>parameter</code> which is again a list that hast two <code>tibble</code> elements. The first one is <code>parameter$values</code> that stores all parameter combinations in a <code>tibble</code>, in this case with nine columns for all the parameters and one row, as we only defined one parameter combination. The names of the parameter are in this case the SWAT+ model parameter names as we did not define individual names. If individual parameter names were defined the column names would be the individual names.</p>
@@ -420,100 +420,141 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">q_sim1_sim</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">q_plot</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">flo_out</span>, col <span class="op">=</span> <span class="va">par_change</span>, lty <span class="op">=</span> <span class="va">par_change</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">flo_out</span>, col <span class="op">=</span> <span class="va">par_change</span>, linetype <span class="op">=</span> <span class="va">par_change</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tomato3'</span>, <span class="st">'steelblue3'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_linetype_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'solid'</span>, <span class="st">'dashed'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="SWATplusR_files/figure-html/unnamed-chunk-28-1.png" width="700"> The plot shows differences between the two simulations, particularly for the recession and base flow of the discharge. Without discussing the results in any way, we can see that the parameter changes were effective in our small example. I would strongly recommend to perform such a procedure with short simulation runs and every parameter that should be included in e.g. a calibration individually to verify that intended parameter changes actually work. It is better to invest some time in a few quick simulation experiments, than having to realize that changing parameter values did not work after running thousands of simulations for a few days.</p>
+<p><img src="SWATplusR_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
+<p>The plot shows differences between the two simulations, particularly for the recession and base flow of the discharge. Without discussing the results in any way, we can see that the parameter changes were effective in our small example. I would strongly recommend to perform such a procedure with short simulation runs and every parameter that should be included in e.g. a calibration individually to verify that intended parameter changes actually work. It is better to invest some time in a few quick simulation experiments, than having to realize that changing parameter values did not work after running thousands of simulations for a few days.</p>
 </div>
 <div class="section level3">
 <h3 id="simulations-with-a-parameter-set">Simulations with a parameter set<a class="anchor" aria-label="anchor" href="#simulations-with-a-parameter-set"></a>
 </h3>
-<p>The same workflow works with several parameter sets when they are defined in a <code>tibble</code>. The example below uses the same parameters as above, but in this case a <code>tibble</code> was defined with 8 random realizations for each parameter within the defined boundaries.</p>
+<p>Similar to the single parameter combination in the previous example we can also define entire parameter sets that we implement in the simulation runs. The only difference is that we cannot define a set of parameter combinations with a single vector with the <code><a href="https://rdrr.io/r/base/c.html" class="external-link">c()</a></code> function. Instead we define a <code>tibble</code> with our parameter combinations. In this tibble each column defines a parameter change (again through the syntax of its name). Each row is one combination of the parameter changes that will be used in a simulation. The example below uses a similar combination of parameter changes as in the previous example. This time we uniformly sample each parameter change <code>n = 5</code> times with <code><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif()</a></code> and combine all samples to a table with 9 columns and 5 rows.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">par_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span><span class="st">"cn2.hru|change = abschg"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">8</span>,<span class="op">-</span><span class="fl">15</span>,<span class="fl">10</span><span class="op">)</span>,
-                  <span class="st">"alpha.gw|change = absval"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span>
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">5</span>
+
+<span class="va">par_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span><span class="st">'cn2.hru | change = abschg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">15</span>,<span class="fl">10</span><span class="op">)</span>,
+                  <span class="st">'lat_ttime.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.5</span>,<span class="fl">5</span><span class="op">)</span>,
+                  <span class="st">'lat_len.hru | change = abschg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">10</span>,<span class="fl">50</span><span class="op">)</span>,
+                  <span class="st">'epco.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">1</span><span class="op">)</span>,
+                  <span class="st">'esco.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">1</span><span class="op">)</span>,
+                  <span class="st">'perco.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">0.8</span><span class="op">)</span>,
+                  <span class="st">'k.sol | change = pctchg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">20</span>,<span class="fl">100</span><span class="op">)</span>,
+                  <span class="st">'awc.sol | change = pctchg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">20</span>,<span class="fl">20</span><span class="op">)</span>,
+                  <span class="st">'alpha.aqu | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">0.8</span><span class="op">)</span><span class="op">)</span>
+
 <span class="va">par_set</span></code></pre></div>
-<p>The implementation in the <code>run_swat*()</code> function works the same way. To execute multiple SWAT simulations with many parameter sets the <code>SWATplusR</code> package provides an option parallel computing. To perform a parallel model execution the number of parallel threads is defined with the input argument <code>n_thread</code>.</p>
+<p>The implementation in <code>run_swat*()</code> works the same way as with a single parameter set. The parameter table <code>par_set</code> is simply passed to the input argument <code>parameter</code>. To show the main differences in the simulation outputs we define the three SWAT output variables <em>‘flo_out’</em>, <em>‘surq_gen’</em>, and <em>‘latq’</em> to be returned in <code>R</code>. The progress message this time shows that 5 simulations are performed and updates the elapsed and remaining time for the simulations, which can be valuable information in case of longer simulation experiments. It further says that the simulations are performed on one core. Parallel processing is implemented in <code>SWATplusR</code> and can be easily activated with the input argument <code>n_thread</code>. Parallel processing will be briefly addressed in the section ??? below.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">q_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
-                      output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>q_sur  <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
+<code class="sourceCode R"><span class="va">q_simn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
+                       output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>q_cha <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">'channel_sd'</span>,
+                                                           variable <span class="op">=</span> <span class="st">'flo_out'</span>,
+                                                           unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
+                                     q_sur <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
                                                            variable <span class="op">=</span> <span class="st">"surq_gen"</span>,
                                                            unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
-                                    q_lat  <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
+                                     q_lat <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
                                                            variable <span class="op">=</span> <span class="st">"latq"</span>,
                                                            unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
-                      parameter <span class="op">=</span> <span class="va">par_set</span>,
-                      n_thread <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+                       parameter <span class="op">=</span> <span class="va">par_set</span><span class="op">)</span>
 
-<span class="co">#&gt; Building 4 threads in 'Define:/your/path/swatplus_demo/.model_run':</span>
-<span class="co">#&gt;  Thread 2 of 4   Time elapsed: 1S   Time remaining: 1S    </span>
-<span class="co">#&gt;  Completed 4 thread in 2S</span>
-<span class="co">#&gt; Performing 8 simulations on 4 cores:</span>
-<span class="co">#&gt;  Simulation 4 of 8   Time elapsed: 4S   Time remaining: 4S</span>
-<span class="co">#&gt;  Completed 8 simulations in 11S</span></code></pre></div>
+<span class="co">#&gt; Building 1 thread in 'Define:/your/path/swatplus_demo/.model_run':</span>
+<span class="co">#&gt;  Thread 1 of 1   Time elapsed: 0S   Time remaining: 1S    </span>
+<span class="co">#&gt;  Completed 1 thread in 1S</span>
+<span class="co">#&gt; Performing 5 simulations on 1 cores:</span>
+<span class="co">#&gt;  Simulation 4 of 5   Time elapsed: 16S   Time remaining: 4S</span>
+<span class="co">#&gt;  Completed 5 simulations in 20S</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="exploring-simulations-with-parameter-alterations">Exploring simulations with parameter alterations<a class="anchor" aria-label="anchor" href="#exploring-simulations-with-parameter-alterations"></a>
+<h3 id="exploring-results-with-a-parameter-set">Exploring results with a parameter set<a class="anchor" aria-label="anchor" href="#exploring-results-with-a-parameter-set"></a>
 </h3>
-<p>When parameters were altered in a simulation run, the performed parameter changes are saved in the simulation outputs by default. As a consequence, the entire simulation output cannot be provided in a single <code>tibble</code> anymore and will be returned as a list with two main list entries. <code>output$parameter</code> provides all information on the parameter changes that were performed in the simulation runs. <code>output$simulation</code> provides the simulation results. The outputs of the previous model execution of the SWAT+ demo project has the following structure</p>
-<p>The list entry <code>$parameter</code> holds two <code>tibbles</code>. The first <code>tibble</code> shows the values of the parameter changes of each model evaluation that was performed with <code>run_swat*()</code>. Each row of the <code>tibble</code> represents a parameter set that was used in a model run. The second <code>tibble</code> provides information on the parameter names, their actual names in the model, the type of change and the constraints on the parameter:</p>
+<p>The general structure of the simulation output that results from a parameter set is a again a <code>list</code> with the two main elements <code>parameter</code> and <code>simulation</code>. If we have a look at <code>q_simn$parameter</code> we can see that the structure is the same as in the previous example. Differences are that the <code>parameter$values</code> table now has 5 rows as we used 5 different parameter combinations in our simulation runs. The table <code>parameter$definition</code> lacks the columns for the conditions <code>plant</code> and <code>hsg</code> this time as we did not define any parameter conditions this time.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">q_sim</span><span class="op">$</span><span class="va">parameter</span>
+<code class="sourceCode R"><span class="va">q_simn</span><span class="op">$</span><span class="va">parameter</span>
 <span class="co">#&gt; $values</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 x 2</span></span>
-<span class="co">#&gt;        cn2 alpha</span>
-<span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>   0.360  0.401</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> -<span style="color: #BB0000;">11.3</span>    0.151</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> -<span style="color: #BB0000;">11.1</span>    0.752</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  -<span style="color: #BB0000;">5.67</span>   0.608</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  -<span style="color: #BB0000;">9.94</span>   0.590</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>   8.37   0.571</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">7</span>   4.52   0.408</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">8</span>   0.023<span style="text-decoration: underline;">0</span> 0.115</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 x 9</span></span>
+<span class="co">#&gt;      cn2 lat_ttime lat_len  epco  esco perco     k    awc alpha</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">14.3</span>       2.56   38.8  0.764 0.359 0.232  5.27  -<span style="color: #BB0000;">3.70</span> 0.422</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> -<span style="color: #BB0000;">10.4</span>       2.65    4.81 0.941 0.432 0.760  9.15 -<span style="color: #BB0000;">14.9</span>  0.267</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> -<span style="color: #BB0000;">12.0</span>       1.51   41.6  0.548 0.845 0.375 79.9  -<span style="color: #BB0000;">15.5</span>  0.561</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>   2.55      4.16    2.47 0.816 0.479 0.467 -<span style="color: #BB0000;">9.72</span>  17.9  0.109</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>   9.62      1.64   25.7  0.191 0.140 0.790 63.2  -<span style="color: #BB0000;">14.3</span>  0.279</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $definition</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 x 4</span></span>
-<span class="co">#&gt;   par_name parameter file_name change</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> cn2      cn2       hru       abschg</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> alpha    alpha     gw        absval</span></code></pre></div>
-<p>The list entry <code>$simulation</code> provides the simulation runs that corresponds to each parameter set. Different to the single simulation without parameter changes is that now the simulated variables are not saved in a single <code>tibble</code>, but as a <code>list</code> of <code>tibbles</code>. In this case each simulated variable is saved in one <code>tibble</code>, where the first column of each <code>tibble</code> is the ‘date’ and the other columns are the individual simulation runs. Now the tibbles are named by the variables and each individual run saved in the tibbles is named ‘run_1’ to run ‘run_n.’ In the example two variables were simulated, <code>q_out$simulation$q_sur</code> and <code>q_out$simulation$q_lat</code>. Each <code>tibble</code> holds the date and the runs 1 to 8:</p>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 x 5</span></span>
+<span class="co">#&gt;   par_name  parameter file_name change full_name                      </span>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> cn2       cn2       hru       abschg cn2.hru | change = abschg      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> lat_ttime lat_ttime hru       absval lat_ttime.hru | change = absval</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> lat_len   lat_len   hru       abschg lat_len.hru | change = abschg  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> epco      epco      hru       absval epco.hru | change = absval     </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">5</span> esco      esco      hru       absval esco.hru | change = absval     </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">6</span> perco     perco     hru       absval perco.hru | change = absval    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">7</span> k         k         sol       pctchg k.sol | change = pctchg        </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">8</span> awc       awc       sol       pctchg awc.sol | change = pctchg      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">9</span> alpha     alpha     aqu       absval alpha.aqu | change = absval</span></code></pre></div>
+<p>The major difference in the output list is given in the <code>simulation</code> outputs. <code>simulation</code> is not a single table as it was the case for the simulations with a single parameter combination. In the case of multiple simulations with more than one parameter combination a <code>list</code> of <code>tibbles</code> is generated. As we can see for <code>q_simn$simulation</code> the output is organized in three tables each table provides the simulation runs for each output variable that we defined. Each table in this case has a <code>date</code> column as its first column followed by the columns <code>run_1</code> until <code>run_5</code> where each run provides the simulation outputs for each of the 5 parameter combinations.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">q_sim</span><span class="op">$</span><span class="va">simulation</span>
+<code class="sourceCode R"><span class="va">q_simn</span><span class="op">$</span><span class="va">simulation</span>
+<span class="co">#&gt; $q_cha</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,653 x 6</span></span>
+<span class="co">#&gt;    date         run_1   run_2   run_3   run_4   run_5</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 0.001<span style="text-decoration: underline;">94</span> 0.001<span style="text-decoration: underline;">87</span> 0.002<span style="text-decoration: underline;">31</span> 0.002<span style="text-decoration: underline;">94</span> 0.019<span style="text-decoration: underline;">8</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 0       0       0       0       0.002<span style="text-decoration: underline;">37</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 0       0       0       0       0      </span>
+<span class="co">#&gt; <span style="color: #949494;"># ... with 3,643 more rows</span></span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt; $q_sur</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,653 x 9</span></span>
-<span class="co">#&gt;    date       run_1 run_2 run_3 run_4 run_5 run_6 run_7 run_8</span>
-<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 0.149 0.023 0.024 0.059 0.029 0.335 0.221 0.144</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 0.022 0.003 0.003 0.009 0.004 0.053 0.035 0.021</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 0.005 0.001 0.001 0.002 0.001 0.013 0.008 0.005</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 0.001 0     0     0.001 0     0.003 0.002 0.001</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 0     0     0     0     0     0.001 0.001 0    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 0     0     0     0     0     0     0     0    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 0     0     0     0     0     0     0     0    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 0     0     0     0     0     0     0     0    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 0     0     0     0     0     0     0     0    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 0     0     0     0     0     0     0     0    </span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,653 x 6</span></span>
+<span class="co">#&gt;    date       run_1 run_2 run_3 run_4 run_5</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01     0     0     0 0.003 0.069</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02     0     0     0 0     0.011</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03     0     0     0 0     0.002</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04     0     0     0 0     0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05     0     0     0 0     0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06     0     0     0 0     0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07     0     0     0 0     0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08     0     0     0 0     0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09     0     0     0 0     0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10     0     0     0 0     0    </span>
 <span class="co">#&gt; <span style="color: #949494;"># ... with 3,643 more rows</span></span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $q_lat</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,653 x 9</span></span>
-<span class="co">#&gt;    date       run_1 run_2 run_3 run_4 run_5 run_6 run_7 run_8</span>
-<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 2.27  2.52  2.52  2.44  2.51  1.81  2.06  2.28 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 1.67  1.9   1.90  1.82  1.89  1.32  1.51  1.68 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 1.34  1.54  1.54  1.47  1.53  1.05  1.21  1.34 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 1.14  1.32  1.32  1.26  1.31  0.894 1.03  1.15 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 1.03  1.19  1.19  1.13  1.18  0.802 0.931 1.03 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 0.956 1.10  1.10  1.05  1.10  0.744 0.866 0.961</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 0.906 1.04  1.04  0.994 1.03  0.704 0.822 0.911</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 0.869 0.995 0.994 0.952 0.988 0.675 0.788 0.874</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 0.838 0.957 0.956 0.917 0.95  0.651 0.761 0.843</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 0.812 0.925 0.925 0.888 0.919 0.63  0.737 0.817</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,653 x 6</span></span>
+<span class="co">#&gt;    date       run_1 run_2 run_3 run_4 run_5</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 0.004 0.004 0.006 0.005 0.005</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 0.004 0.003 0.005 0.005 0.004</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 0.004 0.003 0.004 0.005 0.003</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 0.004 0.003 0.004 0.005 0.003</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 0.004 0.002 0.003 0.005 0.003</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 0.003 0.002 0.003 0.005 0.002</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 0.003 0.002 0.003 0.005 0.002</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 0.003 0.002 0.003 0.005 0.002</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 0.003 0.002 0.003 0.004 0.002</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 0.003 0.002 0.003 0.004 0.002</span>
 <span class="co">#&gt; <span style="color: #949494;"># ... with 3,643 more rows</span></span></code></pre></div>
+<p>Again we visualize the simulation results for the 5 parameter combinations. For simplicity we again only use the outputs of <em>‘flo_out’</em>. To better see any differences between the runs we also only plot the year 2008. Without going into any details, we see that substantial differences in the runoff peaks, recession and base flow is visible. The plot example illustrates that the data structure of the simulation outputs makes it easy to process the SWAT simulations in any further analyses.</p>
+<p><img src="SWATplusR_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="setting-simulation-period-and-interval">Setting simulation period and interval<a class="anchor" aria-label="anchor" href="#setting-simulation-period-and-interval"></a>
+</h2>
+<p>Defining the simulation periods and the time intervals in which the simulation results are printed are necessary settings in nearly every SWAT simulation. <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code> provide some input arguments to set these parameters in simulation runs. Most of the input arguments are the same for SWAT+ and SWAT2012 simulations and only a few difference must be considered.</p>
+<p>You can control the simulation period with the two input arguments <code>start_date</code> and <code>end_date</code> in <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="saving-and-loading-simulations">Saving and loading Simulations<a class="anchor" aria-label="anchor" href="#saving-and-loading-simulations"></a>
