@@ -45,6 +45,18 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/par_sampl_calib.html">Parameter sampling and model calibration</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
@@ -553,117 +565,128 @@
 <div class="section level2">
 <h2 id="setting-simulation-period-and-interval">Setting simulation period and interval<a class="anchor" aria-label="anchor" href="#setting-simulation-period-and-interval"></a>
 </h2>
-<p>Defining the simulation periods and the time intervals in which the simulation results are printed are necessary settings in nearly every SWAT simulation. <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code> provide some input arguments to set these parameters in simulation runs. Most of the input arguments are the same for SWAT+ and SWAT2012 simulations and only a few difference must be considered.</p>
-<p>You can control the simulation period with the two input arguments <code>start_date</code> and <code>end_date</code> in <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code>.</p>
+<p>Defining the simulation periods and the time intervals in which the simulation results are printed are necessary settings in nearly every SWAT simulation. <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code> provide some input arguments to define these arguments for SWAT simulations. Most of the input arguments are the same for SWAT+ and SWAT2012 simulations and only a few difference must be considered.</p>
+<p>You can control the simulation period with the two input arguments <code>start_date</code> and <code>end_date</code> in <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code>. To skip a certain number of simulations before printing outputs is an additional argument that is usually defined together with the time frame for the simulation. The reason to skip a few years of the the simulated time series that should not be printed is to use these simulated years as a warm up period to initiate state variables in the SWAT model run. <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code> provide the input argument <code>years_skip</code> to define the number of years that are not printed in the outputs. In the example below we define that simulations should be performed between 2000-01-01 and 2005-12-31 where the first 3 years are skipped for output printing.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_set_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
+                             output <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span><span class="st">'channel_sd'</span>, <span class="st">'flo_out'</span>, <span class="fl">1</span><span class="op">)</span>,
+                             start_date <span class="op">=</span> <span class="fl">20000101</span>,
+                             end_date <span class="op">=</span> <span class="fl">20051231</span>,
+                             years_skip <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt; Building 1 thread in 'Define:/your/path/swatplus_demo/.model_run': </span>
+<span class="co">#&gt;  Completed 1 thread in 0S                                                   </span>
+<span class="co">#&gt; Performing 1 simulation on 1 core: </span>
+<span class="co">#&gt;  Completed 1 simulation in 2S</span></code></pre></div>
+<p>When we have a look at the simulated time series we can see that it starts in the year 2003 and holds data for 3 years.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_set_date</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,096 x 2</span></span>
+<span class="co">#&gt;    date       flo_out</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 0.004<span style="text-decoration: underline;">12</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 0      </span>
+<span class="co">#&gt; <span style="color: #949494;"># ... with 1,086 more rows</span></span></code></pre></div>
+<p><code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> provides an additional input argument to define the date when output printing should be started. With <code>start_date_print</code> you can define a date for which the first outputs should be printed rather than defining the years that should be skipped. This can be an advantage in some cases, but might be synonymous to <code>years_skip</code> in many other cases. A situation where <code>start_date_print</code> can be favored is when hydrological years should be simulated rather than calendar years. <code>years_skip</code>would in such cases simply skip the defined years and starts printing at the first of January of the next year. With <code>start_date_print</code> printing of outputs can e.g. be started at October first if this is the start day of the hydrological year. The example below shows the described difference between <code>years_skip</code> and <code>start_date_print</code>.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_yskip</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
+                          output <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span><span class="st">'channel_sd'</span>, <span class="st">'flo_out'</span>, <span class="fl">1</span><span class="op">)</span>,
+                          start_date <span class="op">=</span> <span class="fl">20001101</span>,
+                          end_date <span class="op">=</span> <span class="fl">20051031</span>,
+                          years_skip <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt; Building 1 thread in 'Define:/your/path/swatplus_demo/.model_run': </span>
+<span class="co">#&gt;  Completed 1 thread in 0S                                                   </span>
+<span class="co">#&gt; Performing 1 simulation on 1 core: </span>
+<span class="co">#&gt;  Completed 1 simulation in 2S</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_stprint</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
+                            output <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span><span class="st">'channel_sd'</span>, <span class="st">'flo_out'</span>, <span class="fl">1</span><span class="op">)</span>,
+                            start_date <span class="op">=</span> <span class="fl">20001101</span>,
+                            end_date <span class="op">=</span> <span class="fl">20051031</span>,
+                            start_date_print <span class="op">=</span> <span class="fl">20031101</span><span class="op">)</span>
+<span class="co">#&gt; Building 1 thread in 'Define:/your/path/swatplus_demo/.model_run': </span>
+<span class="co">#&gt;  Completed 1 thread in 0S                                                   </span>
+<span class="co">#&gt; Performing 1 simulation on 1 core: </span>
+<span class="co">#&gt;  Completed 1 simulation in 2S</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_yskip</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,035 x 2</span></span>
+<span class="co">#&gt;    date       flo_out</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 0.004<span style="text-decoration: underline;">14</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 0      </span>
+<span class="co">#&gt; <span style="color: #949494;"># ... with 1,025 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_stprint</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 731 x 2</span></span>
+<span class="co">#&gt;    date       flo_out</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-11-01 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-11-02 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-11-03 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-11-04 0.001<span style="text-decoration: underline;">58</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-11-05 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-11-06 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-11-07 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-11-08 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-11-09 0      </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-11-10 0      </span>
+<span class="co">#&gt; <span style="color: #949494;"># ... with 721 more rows</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="saving-and-loading-simulations">Saving and loading Simulations<a class="anchor" aria-label="anchor" href="#saving-and-loading-simulations"></a>
+<h2 id="parallel-processing-with-n_thread">Parallel processing with <code>n_thread</code><a class="anchor" aria-label="anchor" href="#parallel-processing-with-n_thread"></a>
 </h2>
-<p>In many cases it is advantageous to save the simulations incrementally after each model evaluation, for instance when long simulation runs would be lost if the computer or the R instance crashes, or when the simulation results cannot be stored in the RAM storage at all.</p>
-<p>Simulations can be saved incrementally in an <em>SQLite</em> data base on the local hard drive, by passing a name for the save folder with the argument <code>save_file</code> in <code>run_swat*()</code>. By default the data base with the name <code>save_file</code> is saved in the project folder. An individual path for the <code>save_file</code> can be defined with the argument <code>save_path</code>. In case the simulations should be only saved in the data base and not returned back to R, the argument <code>return_output = FALSE</code> has to be set.</p>
-<p>These arguments are simply added to the <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> function call to save the simulations in a data base instead of returning them back to R. Below the arguments are added to the previous simulation:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
-            output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>q_sur  <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
-                                                 variable <span class="op">=</span> <span class="st">"surq_gen"</span>,
-                                                 unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
-            q_lat  <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
-                                   variable <span class="op">=</span> <span class="st">"latq"</span>,
-                                   unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
-            parameter <span class="op">=</span> <span class="va">par_set</span>,
-            n_thread <span class="op">=</span> <span class="fl">4</span>,
-            save_file <span class="op">=</span> <span class="st">"q_sur_lat"</span>,
-            return_output <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<p><code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> and <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code> provide the option to employ parallel processing to perform SWAT simulations in parallel on multiple cores when several parameter sets should be used in simulations with a SWAT setup. We will use the example from above, but define 16 parameter combinations this time.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">16</span>
+
+<span class="va">par_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span><span class="st">'cn2.hru | change = abschg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">15</span>,<span class="fl">10</span><span class="op">)</span>,
+                  <span class="st">'lat_ttime.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.5</span>,<span class="fl">5</span><span class="op">)</span>,
+                  <span class="st">'lat_len.hru | change = abschg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">10</span>,<span class="fl">50</span><span class="op">)</span>,
+                  <span class="st">'epco.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">1</span><span class="op">)</span>,
+                  <span class="st">'esco.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">1</span><span class="op">)</span>,
+                  <span class="st">'perco.hru | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">0.8</span><span class="op">)</span>,
+                  <span class="st">'k.sol | change = pctchg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">20</span>,<span class="fl">100</span><span class="op">)</span>,
+                  <span class="st">'awc.sol | change = pctchg'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="op">-</span><span class="fl">20</span>,<span class="fl">20</span><span class="op">)</span>,
+                  <span class="st">'alpha.aqu | change = absval'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>,<span class="fl">0.1</span>,<span class="fl">0.8</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">par_set</span></code></pre></div>
+<p>The only difference when performing the simulations now is that we define <code>n_thread = 4</code>. This means that we use 4 cores of the computer and always run 4 different parameter combinations in parallel. We can see that the run time per parameter combination was reduced. How large the reduction is depends on many parameters and is not always a one-to-one reduction (i.e. doubling the number of cores does not necessarily halve the run time).</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">q_simn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_swatplus.html">run_swatplus</a></span><span class="op">(</span>project_path <span class="op">=</span> <span class="va">path_plus</span>,
+                       output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>q_cha <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">'channel_sd'</span>,
+                                                           variable <span class="op">=</span> <span class="st">'flo_out'</span>,
+                                                           unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
+                                     q_sur <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
+                                                           variable <span class="op">=</span> <span class="st">"surq_gen"</span>,
+                                                           unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
+                                     q_lat <span class="op">=</span> <span class="fu"><a href="../reference/define_output.html">define_output</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"basin_wb"</span>,
+                                                           variable <span class="op">=</span> <span class="st">"latq"</span>,
+                                                           unit <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
+                       parameter <span class="op">=</span> <span class="va">par_set</span>,
+                       n_thread <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 
 <span class="co">#&gt; Building 4 threads in 'Define:/your/path/swatplus_demo/.model_run':</span>
-<span class="co">#&gt;  Thread 2 of 4   Time elapsed: 1S   Time remaining: 1S    </span>
-<span class="co">#&gt;  Completed 4 thread in 2S</span>
-<span class="co">#&gt; Performing 8 simulations on 4 cores:</span>
-<span class="co">#&gt;  Simulation 4 of 8   Time elapsed: 3S   Time remaining: 3S</span>
-<span class="co">#&gt;  Completed 8 simulations in 8S</span></code></pre></div>
-<p>You can see that the function did not return any results in R but generated a folder that we called “q_sur_lat” passed by the argument <code>save_file</code> in the project folder. That folder now contains several data bases. The first data base is called “par_dat.sqlite” and stores the parameter information and the date vector. Further, each of the parallel threads of the simulation generated a data base where each thread wrote the simulation results (This is necessary to avoid access conflicts when writing to data bases in parallel). The simulation data bases are always called “sim_thread_i.sqlite,” where “i” are the indexes of the individual threads (1 to 4 in this case).</p>
-<p><code>SWATplusR</code> provides two options to access the saved simulations. Loading large data bases into the R environment can take a long time. If you only want to know the the content of saved simulations (e.g. to check the successful simulation runs after a crash) you can scan the saved runs with the function <code><a href="../reference/scan_swat_run.html">scan_swat_run()</a></code>. The function writes meta information on the saved SWAT simulations into the console. The function returns the following for our saved runs:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Set the path to the folder where the date bases were saved</span>
-<span class="va">path_saved_q</span> <span class="op">&lt;-</span> <span class="st">"Path:/to/the/folder/q_sur_lat"</span>
-
-<span class="fu"><a href="../reference/scan_swat_run.html">scan_swat_run</a></span><span class="op">(</span>save_dir <span class="op">=</span> <span class="va">path_saved_q</span><span class="op">)</span>
-<span class="co">#&gt; Simulation period:</span>
-<span class="co">#&gt;  2003-01-01 to 2012-12-31</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; Simulated variables:</span>
-<span class="co">#&gt; q_lat: runs 1 to 8</span>
-<span class="co">#&gt; q_sur: runs 1 to 8</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; Parameter set:</span>
-<span class="co">#&gt; # A tibble: 8 x 2</span>
-<span class="co">#&gt;        cn2 alpha</span>
-<span class="co">#&gt;      &lt;dbl&gt; &lt;dbl&gt;</span>
-<span class="co">#&gt; 1   0.360  0.401</span>
-<span class="co">#&gt; 2 -11.3    0.151</span>
-<span class="co">#&gt; 3 -11.1    0.752</span>
-<span class="co">#&gt; 4  -5.67   0.608</span>
-<span class="co">#&gt; 5  -9.94   0.590</span>
-<span class="co">#&gt; 6   8.37   0.571</span>
-<span class="co">#&gt; 7   4.52   0.408</span>
-<span class="co">#&gt; 8   0.0230 0.115</span>
-<span class="co">#&gt; # A tibble: 2 x 4</span>
-<span class="co">#&gt;   par_name parameter file_name change</span>
-<span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;</span>
-<span class="co">#&gt; 1 cn2      cn2       hru       abschg</span>
-<span class="co">#&gt; 2 alpha    alpha     gw        absval</span></code></pre></div>
-<p><code><a href="../reference/scan_swat_run.html">scan_swat_run()</a></code> returns information on the simulation period, which output variables were saved and which simulation runs were executed for these variables. Further, information on the used model parameter sets is written.</p>
-<p>With <code><a href="../reference/load_swat_run.html">load_swat_run()</a></code> you can then load the simulations saved in the data bases. In case the entire set of simulations cannot be loaded in to the RAM storage the function provides the option to only load parts of the saved simulations. In the example below for example we load only the variable “q_lat” and only the first three runs into R:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">q_subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_swat_run.html">load_swat_run</a></span><span class="op">(</span>save_dir <span class="op">=</span> <span class="va">path_saved_q</span>,
-                          variable <span class="op">=</span> <span class="st">"q_lat"</span>,
-                          run <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">q_subset</span>
-<span class="co">#&gt; $parameter</span>
-<span class="co">#&gt; $parameter$values</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 x 2</span></span>
-<span class="co">#&gt;        cn2 alpha</span>
-<span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>   0.360  0.401</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> -<span style="color: #BB0000;">11.3</span>    0.151</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> -<span style="color: #BB0000;">11.1</span>    0.752</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  -<span style="color: #BB0000;">5.67</span>   0.608</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  -<span style="color: #BB0000;">9.94</span>   0.590</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>   8.37   0.571</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">7</span>   4.52   0.408</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">8</span>   0.023<span style="text-decoration: underline;">0</span> 0.115</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $parameter$definition</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 x 4</span></span>
-<span class="co">#&gt;   par_name parameter file_name change</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> cn2      cn2       hru       abschg</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> alpha    alpha     gw        absval</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $simulation</span>
-<span class="co">#&gt; $simulation$q_lat</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,653 x 4</span></span>
-<span class="co">#&gt;    date                run_1 run_2 run_3</span>
-<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2003-01-01 <span style="color: #949494;">00:00:00</span> 2.27  2.52  2.52 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2003-01-02 <span style="color: #949494;">00:00:00</span> 1.67  1.9   1.90 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2003-01-03 <span style="color: #949494;">00:00:00</span> 1.34  1.54  1.54 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2003-01-04 <span style="color: #949494;">00:00:00</span> 1.14  1.32  1.32 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2003-01-05 <span style="color: #949494;">00:00:00</span> 1.03  1.19  1.19 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2003-01-06 <span style="color: #949494;">00:00:00</span> 0.956 1.10  1.10 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2003-01-07 <span style="color: #949494;">00:00:00</span> 0.906 1.04  1.04 </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2003-01-08 <span style="color: #949494;">00:00:00</span> 0.869 0.995 0.994</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2003-01-09 <span style="color: #949494;">00:00:00</span> 0.838 0.957 0.956</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2003-01-10 <span style="color: #949494;">00:00:00</span> 0.812 0.925 0.925</span>
-<span class="co">#&gt; <span style="color: #949494;"># ... with 3,643 more rows</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="further-input-arguments">Further input arguments<a class="anchor" aria-label="anchor" href="#further-input-arguments"></a>
-</h2>
-<p>The functions <code><a href="../reference/run_swat2012.html">run_swat2012()</a></code> and <code><a href="../reference/run_swatplus.html">run_swatplus()</a></code> have many further input arguments that allow to control important settings of a SWAT simulation. Here I will just mention a few of the essential ones. A detailed overview of the input arguments is provided in the respective function documentations. The simulation period can be controlled with the arguments <code>start_date</code> and <code>end_date</code>. The format writing the outputs of the simulations in the SWAT project folder is controlled by the arguments <code>output_interval</code> to define whether the simulations are written with daily, monthly or yearly time steps, <code>years_skip</code> to define the simulated years that should be skipped for writing the simulation outputs. With the argument <code>run_index</code> a subset of the provided parameter combinations can be simulated. This is useful, when for instance distributing the simulations on multiple computers, or when continuing the simulations after a crash.</p>
-<p>You might have noticed, that running SWAT also provides information on the progress. This is very convenient for long simulation runs with many model evaluations. If you implement the SWAT function into other function calls the writing to the console can be an undesired behavior. You can quiet the function call with the argument <code>quiet = TRUE</code>.</p>
+<span class="co">#&gt;  Thread 1 of 1   Time elapsed: 0S   Time remaining: 1S    </span>
+<span class="co">#&gt;  Completed 4 thread in 1S</span>
+<span class="co">#&gt; Performing 16 simulations on 4 cores:</span>
+<span class="co">#&gt;  Simulation 8 of 16   Time elapsed: 22S   Time remaining: 20S</span>
+<span class="co">#&gt;  Completed 16 simulations in 40S</span></code></pre></div>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
