@@ -125,10 +125,7 @@ build_model_run <- function(project_path, run_path, n_thread, os, swat_vers, qui
 get_os <- function() {
   if (.Platform$OS.type == "windows") {
     "win"
-  } else if (Sys.info()["sysname"] == "Darwin") {
-    #"mac"
-    stop("SWATplusR only supported for Windows and Linux")
-  } else if (.Platform$OS.type == "unix") {
+  } else if (Sys.info()["sysname"] == "Darwin" or Sys.info()["sysname"] == "unix") {
     "unix"
   } else {
     stop("Unknown OS")
