@@ -77,7 +77,7 @@ build_model_run <- function(project_path, run_path, n_thread, os, swat_vers, qui
       .[grepl(".exe$",.)]
 
   } else if(os == "unix") {
-    swat_exe <- system("find"%&&%project_path%&&%"-type f -perm -111",
+    swat_exe <- system("find"%&&%project_path%&&%"-maxdepth 1 -type f -perm -111",
                         intern = T) %>%
       basename(.)
   }
