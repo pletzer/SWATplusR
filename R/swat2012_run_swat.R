@@ -176,6 +176,7 @@ run_swat2012 <- function(project_path, output, parameter = NULL,
   ## Manage the handling of the '.model_run' folder structure.
   swat_exe <- manage_model_run(project_path, run_path, n_thread, os,
                                "2012", refresh, quiet)
+  print(sprintf("***** running swat_exe = %s ", swat_exe))
 #-------------------------------------------------------------------------------
   # Write files
   ## Write file.cio
@@ -233,7 +234,6 @@ run_swat2012 <- function(project_path, output, parameter = NULL,
     }
 
     ## Execute the SWAT exe file located in the thread folder
-    print(sprintf("... running %s in working dir %s", swat_exe, thread_path))
     msg <- run(run_os(swat_exe, os), wd = thread_path, error_on_status = FALSE)
 
     if(nchar(msg$stderr) == 0) {
