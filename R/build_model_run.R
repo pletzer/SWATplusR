@@ -19,7 +19,6 @@
 
 manage_model_run <- function(project_path, run_path, n_thread, os,
                              swat_vers, refresh, quiet) {
-  print(sprintf("**** swat_vers = %s", swat_vers))
   ## Case .model_run exists already and no forced refresh considered
   if(dir.exists(run_path) & !refresh) {
     ## Check how many parallel threads are available
@@ -82,7 +81,6 @@ build_model_run <- function(project_path, run_path, n_thread, os, swat_vers, qui
                         intern = T) %>%
       basename(.)
   }
-  print(sprintf("*** swat_exe = %s", swat_exe))
 
   # Make sure that there is exactly one executable in the SWAT project folder
   if(length(swat_exe) == 0) stop("No SWAT executable found in the project folder!")
@@ -118,7 +116,6 @@ build_model_run <- function(project_path, run_path, n_thread, os, swat_vers, qui
   if(!quiet){
     finish_progress(n_thread, t0, "thread")
   }
-  print(sprintf("*** 2 swat_exe = %s", swat_exe))
   return(swat_exe)
 }
 
